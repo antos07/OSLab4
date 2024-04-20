@@ -35,17 +35,8 @@ std::ptrdiff_t get_writer_value_offset() {
 
 
 std::int32_t read_value_from_writer(::pid_t writer_pid, std::ptrdiff_t offset) {
-//    if (::ptrace(PTRACE_ATTACH, writer_pid) == -1) {
-//        std::perror(nullptr);
-//        throw std::runtime_error{"Failed to attach to the writer process"};
-//    }
-//    if(::waitpid(writer_pid, nullptr, 0) == -1) {
-//        std::perror(nullptr);
-//        throw std::runtime_error{"Failed to terminate to the writer process"};
-//    }
-
     std::string memory_file{std::format("/proc/{}/mem", writer_pid)};
-    int fd {::open(memory_file.c_str(), O_RDONLY)};
+    int fd{::open(memory_file.c_str(), O_RDONLY)};
     if (fd == -1) {
         std::perror(nullptr);
         throw std::runtime_error{"Failed to open the writer memory"};
@@ -59,18 +50,13 @@ std::int32_t read_value_from_writer(::pid_t writer_pid, std::ptrdiff_t offset) {
 
     ::close(fd);
 
-//    if (::ptrace(PTRACE_DETACH, writer_pid) == -1) {
-//        std::perror(nullptr);
-//        throw std::runtime_error{"Failed to detach from the writer process"};
-//    }
-
     return value;
 }
 
 
 int main() {
     ::pid_t writer_pid{get_writer_pid()};
-    std::ptrdiff_t  writer_value_offset{get_writer_value_offset()};
+    std::ptrdiff_t writer_value_offset{get_writer_value_offset()};
 
     std::int32_t old_value{read_value_from_writer(writer_pid, writer_value_offset)};
     std::cout << "New value from writer: " << old_value << std::endl;
